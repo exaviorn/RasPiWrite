@@ -35,7 +35,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # VERSION 1.0 -MACOSX- (March 2012)
-#	* For support, please go to raspi.exaviorn.com, or go to our github (github address)
+#	* For support, please go to raspi.exaviorn.com, or go to our github (https://github.com/exaviorn/RasPiWrite)
 #	* The script currently only works for Macs, however it can be changed with very little alterations, 
 #	  I will add in OS detection logic and the subsequent functions from there
 
@@ -225,17 +225,17 @@ productivity and programming
 		if osChoice == '1':
 			URL = findDL('debian')
 			print 'Downloading Debian from [%s]'% URL
-			#download(URL)
+			download(URL)
 			transfer('debian6-17-02-2012.zip','zip','dl',SD,URL)
 		if osChoice == '2':
 			URL = findDL('arch')
 			print 'Downloading Arch Linux from [%s]'% URL
-			#download(URL)
+			download(URL)
 			transfer('archlinuxarm-01-03-2012.zip','zip','dl',SD,URL)
 		if osChoice == '3':
 			URL = findDL('fedora')
 			print 'Downloading Fedora 14 from [%s]'% URL
-			#download(URL)
+			download(URL)
 			transfer('raspberrypi-fedora-remix-14-r1.img.gz','gz','dl',SD, URL)
 
 	if (userChoice == 'N') or (userChoice == 'n'):

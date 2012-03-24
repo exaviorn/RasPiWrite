@@ -1,0 +1,17 @@
+RasPiWrite
+by Matt Jump
+####################
+About:
+RasPiWrite is a simple and easily modifiable python script that automates the process of mounting, downloading and installing a Raspberry Pi Distro, currently the script is 
+only compatiable with Mac OSX systems, mostly because currently Macs have no easy way of installing Raspberry Pi distros, however I will try and make the script universal for all 
+unix systems as soon as I can.
+
+So...What can I do?
+RasPiWrite supports all the distros currently on the Official Raspberry Pi downloads page, the script will choose a mirror at random to help ease the pressure on the mirror 
+network.
+
+Warning - 
+Please bear in mind that this software is very much in Beta, if you don't follow all instructions provided, you may screw something up majorly!
+
+Support and Up-to-date info:
+exaviorn.com and raspi.exaviorn.com
