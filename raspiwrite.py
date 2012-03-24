@@ -121,7 +121,7 @@ def unmount(location):	#unmounts the drive so that it can be rewrittern
 	print output
 	if 'Unmount failed for' in output:
 		print WARNING + 'Error, the Following drive couldn\'t be unmounted, exiting...' + end
-	exit() #<-- commented out for debugging purposes
+		exit() #<-- commented out for debugging purposes
 
 class transferInBackground (threading.Thread): 	#Runs the dd command in a thread so that I can give a waiting... indicator
 
