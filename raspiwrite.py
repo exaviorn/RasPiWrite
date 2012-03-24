@@ -121,12 +121,11 @@ def unmount(location):	#unmounts the drive so that it can be rewrittern
 	print output
 	if 'Unmount failed for' in output:
 		print WARNING + 'Error, the Following drive couldn\'t be unmounted, exiting...' + end
-	#	#exit() #<-- commented out for debugging purposes
+	exit() #<-- commented out for debugging purposes
 
 class transferInBackground (threading.Thread): 	#Runs the dd command in a thread so that I can give a waiting... indicator
 
    def run ( self ):
-	#output = getoutput('sleep 10 && echo hello!') 
 	global SDsnip
 	global path
 	copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
@@ -177,9 +176,7 @@ GNU General Public License for more details.
 	print '###################################################################\n'
 	confirm = raw_input(boldStart + 'Please verify this information before hitting typing \'accept\', if this information isn\'t correct, please press ctrl + c (^C), or type \'exit\' to quit: ' + end)
 	if confirm == 'accept':
-		#copyString = 'dd bs=1m if=%s of=%s' % (path, SD.replace(' ', '')[:-2])
    		thread1 = transferInBackground()
-   		#transferInBackground.run(SD,path)
    		thread1.start()
 		sys.stdout.write("Waiting")
    		sys.stdout.flush()
@@ -203,7 +200,6 @@ Thank You for using RasPiWrite, you are now free to eject your drive
 def getImage(SD): #gives the user a bunch of options to download an image, or select their own, it then passes the user on to the transfer function
 	global boldStart
 	global end
-	#print 'SD is:' + SD
 	userChoice = raw_input('Do you wish to Download a Raspberry Pi compatiable image (choose yes if you don\'t have one) (Y/n): ')
 	if (userChoice == 'Y') or (userChoice == 'y'):
 		print boldStart + """
@@ -267,15 +263,12 @@ WARNING: THE FOLLOWING PREDICTED LOCATION MAY BE INCORRECT!
 #############################################################
 """ + end
 		manualID = raw_input("Please enter the location you believe holds the SD Card: ")
-		#print manualID
 		driveTest(manualID)
 	else:
 		sdID = raw_input("I Believe this is your SD card: " + SD + " is that correct? (Y/n) ")
 		if (sdID == 'Y') or (sdID == 'y'): #continue
 			unmount(SD) #<--works, so don't need to test
-			#print 'SD is:' + SD
 			getImage(SD)
-			#print 'SD is:' + SD
 			
 		if (sdID == 'N') or (sdID == 'n'):
 			manualID = raw_input("Please enter the location you believe holds the SD Card: ")
