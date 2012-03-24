@@ -34,7 +34,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# VERSION 1.0 -MACOSX- (March 2012)
+# VERSION 1.01 -MACOSX- (March 2012)
 #	* For support, please go to raspi.exaviorn.com, or go to our github (https://github.com/exaviorn/RasPiWrite)
 #	* The script currently only works for Macs, however it can be changed with very little alterations, 
 #	  I will add in OS detection logic and the subsequent functions from there
@@ -48,7 +48,7 @@ from random import choice
 #Display Augs
 boldStart = "\033[1m"
 end = "\033[0;0m"
-WARNING = '\033[0;31m' #0;31
+WARNING = '\033[0;31m'
 
 def findDL(OS): 	#got first 8 of the EUROPEAN mirrors (sorry, will work on global stuff later!), one is selected at random and returned as a string
 	debian = ['http://files.velocix.com/c1410/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
@@ -121,7 +121,7 @@ def unmount(location):	#unmounts the drive so that it can be rewrittern
 	print output
 	if 'Unmount failed for' in output:
 		print WARNING + 'Error, the Following drive couldn\'t be unmounted, exiting...' + end
-		exit() #<-- commented out for debugging purposes
+		exit()
 
 class transferInBackground (threading.Thread): 	#Runs the dd command in a thread so that I can give a waiting... indicator
 
@@ -129,7 +129,7 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
 	global SDsnip
 	global path
 	copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
-	print copyString
+	print 'Running ' + copyString + '...'
 	print getoutput(copyString)
 	print 'done!'
      
@@ -143,19 +143,21 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		path =  file.replace(".gz", "") #<-- verify
 		extractCMD = 'gunzip ' + file
 
-	if obtain == 'dl': obtainType = 'Downloaded by this client (reliable and safe)'
-	if obtain == 'usr': obtainType = 'Obtained by user and passed in (potentially dangerous)'
-
-	if (os.path.exists(path)):
-		print 'archive already has been extracted, skipping unzipping...'
-	else:
-		download(URL)
-		print 'Ok... Unzipping the disk , this may take a while...'
-		print getoutput(extractCMD) #extract here!
-	print path
+	if obtain == 'dl': 
+		obtainType = 'Downloaded by this client (reliable and safe)'
+		if (os.path.exists(path)):
+			print 'archive already has been extracted, skipping unzipping...'
+		else:
+			download(URL)
+			print 'Ok... Unzipping the disk , this may take a while...'
+			print getoutput(extractCMD) #extract here!
+	if obtain == 'usr': 
+		obtainType = 'Obtained by user and passed in (potentially dangerous)'
+		print 'Found archive inputted by user, extracting...'
+		print getoutput(extractCMD)
 	global SDsnip
 	SDsnip =  SD.replace(' ', '')[:-2]
-	print SDsnip
+	#print SDsnip <-debug
 	print '\n\n###################################################################'
 	print 'About to start the transfer procedure, here is your setup:'
 	print """
@@ -221,17 +223,14 @@ productivity and programming
 		if osChoice == '1':
 			URL = findDL('debian')
 			print 'Downloading Debian from [%s]'% URL
-			download(URL)
 			transfer('debian6-17-02-2012.zip','zip','dl',SD,URL)
 		if osChoice == '2':
 			URL = findDL('arch')
 			print 'Downloading Arch Linux from [%s]'% URL
-			download(URL)
 			transfer('archlinuxarm-01-03-2012.zip','zip','dl',SD,URL)
 		if osChoice == '3':
 			URL = findDL('fedora')
 			print 'Downloading Fedora 14 from [%s]'% URL
-			download(URL)
 			transfer('raspberrypi-fedora-remix-14-r1.img.gz','gz','dl',SD, URL)
 
 	if (userChoice == 'N') or (userChoice == 'n'):
@@ -241,12 +240,12 @@ productivity and programming
 			matchGzip = re.match('^.*\.img.gz$',userLocate)
 			if matchZip is not None:
 				print 'Found Zip'
-				findDL('debian')
-				transfer(userLocate,'zip','usr',SD)
+				#findDL('debian')
+				transfer(userLocate,'zip','usr',SD,'none')
 
     		elif matchGzip is not None:
     			print 'found Gzip'
-    			transfer(userLocate, 'zip', 'usr',SD)
+    			transfer(userLocate, 'zip', 'usr',SD,'none')
     			
 				
 		else:
@@ -298,7 +297,7 @@ print """//////////////////////// """ + boldStart + """
 * Matt Jump
 * exaviorn.com
 ////////////////////////
-(Version 1.0 -MACOSX-)
+(Version 1.01 -MACOSX-)
 """
 OS = os.uname() #gets OS vars
 if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around some of the command differences
