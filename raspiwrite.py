@@ -14,11 +14,11 @@
 #     .cOx....dOl.    
 #        .x00k.    
 
-#//////////////////////// 
-#* Raspberry Pi SD Writer 
-#* Matt Jump
-#* exaviorn.com
-#////////////////////////
+#//////////////////////////// 
+#	* Raspberry Pi SD Writer 
+#	* Matt Jump
+#	* exaviorn.com
+#///////////////////////////
 # Copyright Matthew Jump 2012
 # The following code is licenced under the Gnu Public Licence, please see gpl.txt for reference
 #  This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# VERSION 1.01 -MACOSX- (March 2012)
+# VERSION 1.1 -MACOSX- (May 2012)
+#	* Summary: Major fixes and renewal of and to the download system, manual system (although it still only works in the same folder as the script).
+# 	  An update system has also been included (Please see exaviorn.com for details)
 #	* For support, please go to raspi.exaviorn.com, or go to our github (https://github.com/exaviorn/RasPiWrite)
 #	* The script currently only works for Macs, however it can be changed with very little alterations, 
 #	  I will add in OS detection logic and the subsequent functions from there
@@ -43,32 +45,67 @@ import re, os, urllib2, time, sys, threading
 from commands import *
 from sys import exit
 from random import choice
+from xml.dom.minidom import parseString
 
+version = 1.1
 
 #Display Augs
 boldStart = "\033[1m"
 end = "\033[0;0m"
 WARNING = '\033[0;31m'
 
-def findDL(OS): 	#got first 8 of the EUROPEAN mirrors (sorry, will work on global stuff later!), one is selected at random and returned as a string
-	debian = ['http://files.velocix.com/c1410/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
-	 			'http://raspberrypi.nibelheim.ch/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
-	  			'http://www.marianm.net/pi/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
-	 			'http://85.199.153.78/mirror/pub/linux/raspberrypi/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
-	 			'http://mirror.bytemark.co.uk/raspberrypi/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
-	 			'http://only4you.in/raspberrypi/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
-	 			'http://mirrors.starteffect.com/rpi/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip',
-	 			'http://mirrors.melbourne.co.uk/sites/downloads.raspberrypi.org/images/debian/6/debian6-17-02-2012/debian6-17-02-2012.zip']
+def checkforUpdate():
+	print 'Checking for updates...'
+	global version
 
-	arch = ['http://files.velocix.com/c1410/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip',
-			'http://raspberrypi.arrabonus.hu/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip',
-			'http://m1.raspberrypi.itechcon.it/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip',
-			'http://raspberrypi.rloewe.net/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip',
-			'http://91.203.212.159/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip',
-			'http://131.220.23.128/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip',
-			'http://rpi.stream-in-box.com/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip',
-			'http://85.199.153.78/mirror/pub/linux/raspberrypi/images/archlinuxarm/archlinuxarm-01-03-2012/archlinuxarm-01-03-2012.zip']
+	try:
+		file = urllib2.urlopen('http://www.exaviorn.com/raspiwrite.xml', timeout = 1)
 
+		data = file.read()
+		file.close()
+
+		dom = parseString(data)
+
+		versionToDate = float(dom.getElementsByTagName('Version')[0].toxml().replace('<Version>','').replace('</Version>',''))
+		summary = dom.getElementsByTagName('Summary')[0].toxml().replace('<Summary>','').replace('</Summary>','')
+		dlURL = dom.getElementsByTagName('URL')[0].toxml().replace('<URL>','').replace('</URL>','')
+
+		if version < versionToDate:
+			print '#####################################################################################################################'
+			print 'Your current version (%s) of RasPiWrite is not the latest, please go to the link below to update to version %s,' % (version, versionToDate)
+			print 'The Changes include: %s' % summary
+			print '''
+Please download the latest version of RasPiWrite from %s''' % dlURL
+			print '''#####################################################################################################################
+			'''
+		else:
+			print '''Your version of RasPiWrite is up to date
+			'''
+
+	except urllib2.URLError, e:
+    		print """There was an error in checking for an update: %r
+    		""" % e
+
+def grabRoot(distro): #Parses the raspberry pi downloads page for the links for the currently RasPiWrite supported distros
+	links  = list()
+	htmlSource = urllib2.urlopen('http://www.raspberrypi.org/downloads').read()
+	linksList = re.findall('href="(.*)"',htmlSource)
+	for link in linksList:
+		if distro in link:
+			if link.endswith('.zip') or link.endswith('.tar.bz2'):
+				return link
+
+
+def getZipUrl(url): #gets all the urls that end in .zip or .tar.bz2 (only two disk image archive types on the download web page)
+	links  = list()
+	htmlSource = urllib2.urlopen(url).read()
+	linksList = re.findall('<a href="?([^\s^"]+)',htmlSource)
+	for link in linksList:
+	    if link.endswith('.zip') or link.endswith('.tar.bz2'):
+	    	 links.append(link)
+	return links
+
+def findDL(OS): #legacy reasons (Rasberry Pi website doesn't currently list Fedora - http://www.raspberrypi.org/phpBB3/viewtopic.php?f=2&t=5624)
 	fedora = ['http://achtbaan.nikhef.nl/events/rpi/images/fedora/14/r1-06-03-2012/raspberrypi-fedora-remix-14-r1.img.gz',
 			'http://mirror.star.net.uk/raspberrypi/images/fedora/14/r1-06-03-2012/raspberrypi-fedora-remix-14-r1.img.gz',
 			'http://www.sqltuning.cz/raspberry/images/fedora/14/r1-06-03-2012/raspberrypi-fedora-remix-14-r1.img.gz',
@@ -77,8 +114,6 @@ def findDL(OS): 	#got first 8 of the EUROPEAN mirrors (sorry, will work on globa
 			'http://ftp.ticklers.org/RaspberryPi/images/fedora/14/r1-06-03-2012/raspberrypi-fedora-remix-14-r1.img.gz',
 			'http://files.velocix.com/c1410/images/fedora/14/r1-06-03-2012/raspberrypi-fedora-remix-14-r1.img.gz',
 			'http://raspberrypi.reon.hu/images/fedora/14/r1-06-03-2012/raspberrypi-fedora-remix-14-r1.img.gz']
-	if OS == 'arch': return choice(arch)
-	if OS == 'debian': return choice(debian)
 	if OS == 'fedora': return choice(fedora)
 
 
@@ -143,21 +178,68 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		path =  file.replace(".gz", "") #<-- verify
 		extractCMD = 'gunzip ' + file
 
+	if archiveType == 'bz2': 
+		path = '' #probably don't need, but I found during debug that the interpreter would complain about the var not being defined
+		#QtonPi making me jump through hoops:
+		basePath =  file.replace(".tar.bz2", "")
+		#this path is actually changed to something that the script can locate, such as the basepath
+		extractPath =  file.replace(".tar.bz2", "") + '/sdcard-img/' + re.search(r"(?=qtonpi)([^>]*)(?=-)", file).group(0) + '-sdcard' + re.search(r"(?=-)([^>]*)(?=.tar)", file).group(0) + '.img.bz2' #<-- verify
+		finalPath = file.replace(".tar.bz2", "") + '/sdcard-img/' + re.search(r"(?=qtonpi)([^>]*)(?=-)", file).group(0) + '-sdcard' + re.search(r"(?=-)([^>]*)(?=.tar)", file).group(0) + '.img'
+		extractCMD = 'tar jxf ' + file
+		path = basePath
+
 	if obtain == 'dl': 
 		obtainType = 'Downloaded by this client (reliable and safe)'
 		if (os.path.exists(path)):
 			print 'archive already has been extracted, skipping unzipping...'
+			if archiveType == 'bz2':
+				path = extractPath
+				if (os.path.exists(path)):
+					print 'Unzipping image..'
+					print getoutput('bunzip2 ' + path)
+				else:
+					print 'Image has already been unzipped'
+				path = finalPath
 		else:
 			download(URL)
 			print 'Ok... Unzipping the disk , this may take a while...'
 			print getoutput(extractCMD) #extract here!
+			if archiveType == 'bz2':
+				path = extractPath
+				if (os.path.exists(path)):
+					print 'Unzipping image..'
+					print getoutput('bunzip2 ' + path)
+				else:
+					print 'Image has already been unzipped'
+				path = finalPath
 	if obtain == 'usr': 
 		obtainType = 'Obtained by user and passed in (potentially dangerous)'
 		print 'Found archive inputted by user, extracting...'
-		print getoutput(extractCMD)
+		if (os.path.exists(path)):
+			print 'archive already has been extracted, skipping unzipping...'
+			if archiveType == 'bz2':
+				path = extractPath
+				if (os.path.exists(path)):
+					print 'Unzipping image..'
+					print getoutput('bunzip2 ' + path)
+				else:
+					print 'Image has already been unzipped'
+				path = finalPath
+		else:
+			print 'Ok... Unzipping the disk , this may take a while...'
+			print getoutput(extractCMD) #extract here!
+			if archiveType == 'bz2':
+				path = extractPath
+				if (os.path.exists(path)):
+					print 'Unzipping image..'
+					print getoutput('bunzip2 ' + path)
+				else:
+					print 'Image has already been unzipped'
+				path = finalPath
 	global SDsnip
 	SDsnip =  SD.replace(' ', '')[:-2]
 	#print SDsnip <-debug
+	print path
 	print '\n\n###################################################################'
 	print 'About to start the transfer procedure, here is your setup:'
 	print """
@@ -189,9 +271,10 @@ GNU General Public License for more details.
    		print 'Transfer Complete! Please remove the SD card'
    		print """###########################################
 Relevent information:
-> Debian - Login is pi/suse
+> Debian - Login is pi/raspberry
 > Arch - Login is root/root
 > Fedora - Login is root/fedoraarm
+> QtonPi - Login is root/rootme
 ###########################################
 Thank You for using RasPiWrite, you are now free to eject your drive 
    		"""
@@ -216,37 +299,54 @@ end user. Note that this distribution may not be suitable for beginners.
 		"""
 		print boldStart + """
 > Fedora 14 [OPTION 3]""" + end + """
+(raspberrypi-fedora-remix-14-r1)
 The Raspberry Pi recommended choice for beginners, features a full GUI and applications for 
 productivity and programming
 		"""
+		print boldStart + """
+> QtonPi [OPTION 4]""" + end + """
+QtonPi is an Embedded Linux platform plus SDK optimized for developing and running Qt 5 Apps on Raspberry Pi.
+		"""
 		osChoice = raw_input('Your Choice e.g: \'1\' : ')
 		if osChoice == '1':
-			URL = findDL('debian')
+			URL = choice(getZipUrl(grabRoot('debian')))
+			#URL = findDL('debian')
 			print 'Downloading Debian from [%s]'% URL
-			transfer('debian6-17-02-2012.zip','zip','dl',SD,URL)
+			match = grabRoot('debian').rpartition('/')
+			transfer(match[-1],'zip','dl',SD,URL)
 		if osChoice == '2':
-			URL = findDL('arch')
+			URL = choice(getZipUrl(grabRoot('arch')))
 			print 'Downloading Arch Linux from [%s]'% URL
-			transfer('archlinuxarm-01-03-2012.zip','zip','dl',SD,URL)
+			match = grabRoot('arch').rpartition('/')
+			transfer(match[-1],'zip','dl',SD,URL)
 		if osChoice == '3':
 			URL = findDL('fedora')
 			print 'Downloading Fedora 14 from [%s]'% URL
 			transfer('raspberrypi-fedora-remix-14-r1.img.gz','gz','dl',SD, URL)
+		if osChoice == '4':
+			URL = choice(getZipUrl(grabRoot('qtonpi')))
+			print 'Downloading QtonPi 14 from [%s]'% URL
+			match = grabRoot('qtonpi').rpartition('/')
+			transfer(match[-1],'bz2','dl',SD, URL)
 
 	if (userChoice == 'N') or (userChoice == 'n'):
-		userLocate = raw_input('Please locate the disk image: ')
+		userLocate = raw_input('Please locate the disk image (.zip, .img.gz, .tar.bz2 (.tar.bz2 only working with QtonPi distros currently): ')
 		if (os.path.exists(userLocate)):
 			matchZip = re.match('^.*\.zip$',userLocate)
 			matchGzip = re.match('^.*\.img.gz$',userLocate)
+			matchBzip = re.match('^.*\.tar.bz2$',userLocate)
+
 			if matchZip is not None:
 				print 'Found Zip'
 				#findDL('debian')
 				transfer(userLocate,'zip','usr',SD,'none')
-
-    		elif matchGzip is not None:
+    		if matchGzip is not None:
     			print 'found Gzip'
     			transfer(userLocate, 'zip', 'usr',SD,'none')
-    			
+    		if matchBzip is not None:
+    			print 'found Bz2'
+    			transfer(userLocate, 'bz2', 'usr',SD,'none')
+    		
 				
 		else:
 			print 'sorry, the file you have specified doesn\'t exist, please try again'
@@ -297,7 +397,7 @@ print """//////////////////////// """ + boldStart + """
 * Matt Jump
 * exaviorn.com
 ////////////////////////
-(Version 1.01 -MACOSX-)
+(Version 1.1 -MACOSX-)
 """
 OS = os.uname() #gets OS vars
 if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around some of the command differences
@@ -306,8 +406,9 @@ if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around
 if not os.geteuid()==0:
 	print WARNING + 'Please run the script as root, or use sudo e.g. sudo python raspidwrite.py, or sudo ./raspidwrite.py (need to chmod +x)' + end
 	exit()
+checkforUpdate()
 print 'The following script is designed to copy a Raspberry Pi compatiable disk image to an SD Card'
-print boldStart + 'INCORRECTLY FOLLOWING THE WIZARD COULD RESULT IN THE CORRUPTION OF YOUR HARD DISK, PARTITIONS OR A BACKUP USB DRIVE' +end
+print boldStart + 'INCORRECTLY FOLLOWING THE WIZARD COULD RESULT IN THE CORRUPTION OF YOUR HARD DISK, PARTITIONS OR A BACKUP USB DRIVE (INCLUDING MOUNTED TIME MACHINE BACKUP DRIVES)' +end
 print 'It is advisable to remove any other USB HDDs or memory sticks, the wizard might select that one, %s if you have multiple hard drives installed, please take a LOT of care selecting the right drive %s'% (boldStart, end) 
 text = getoutput('df -h')
 raw_input('Now enter your SD Card, press enter when you are ready...')
