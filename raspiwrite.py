@@ -79,7 +79,7 @@ Please download the latest version of RasPiWrite from %s''' % dlURL
 			print '''#####################################################################################################################
 			'''
 		else:
-			print '''Your version of RasPiWrite is up to date
+			print '''Your version of RasPiWrite is up-to-date
 			'''
 
 	except urllib2.URLError, e:
@@ -285,7 +285,7 @@ Thank You for using RasPiWrite, you are now free to eject your drive
 def getImage(SD): #gives the user a bunch of options to download an image, or select their own, it then passes the user on to the transfer function
 	global boldStart
 	global end
-	userChoice = raw_input('Do you wish to Download a Raspberry Pi compatiable image (choose yes if you don\'t have one) (Y/n): ')
+	userChoice = raw_input('Do you wish to Download a Raspberry Pi compatible image (choose yes if you don\'t have one) (Y/n): ')
 	if (userChoice == 'Y') or (userChoice == 'y'):
 		print boldStart + """
 > Debian \"Squeeze\" [OPTION 1]""" + end + """
@@ -364,7 +364,7 @@ WARNING: THE FOLLOWING PREDICTED LOCATION MAY BE INCORRECT!
 		manualID = raw_input("Please enter the location you believe holds the SD Card: ")
 		driveTest(manualID)
 	else:
-		sdID = raw_input("I Believe this is your SD card: " + SD + " is that correct? (Y/n) ")
+		sdID = raw_input("I believe this is your SD card: " + SD + " is that correct? (Y/n) ")
 		if (sdID == 'Y') or (sdID == 'y'): #continue
 			unmount(SD) #<--works, so don't need to test
 			getImage(SD)
@@ -401,17 +401,17 @@ print """//////////////////////// """ + boldStart + """
 """
 OS = os.uname() #gets OS vars
 if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around some of the command differences
-	print WARNING + 'I\'m sorry, but your os isn\'t supported at this time, Linux/Unix users - please tune in soon for a posix version' + end
+	print WARNING + 'I\'m sorry, but your OS isn\'t supported at this time, Linux/Unix users - please tune in soon for a POSIX version' + end
 	exit()
 if not os.geteuid()==0:
-	print WARNING + 'Please run the script as root, or use sudo e.g. sudo python raspidwrite.py, or sudo ./raspidwrite.py (need to chmod +x)' + end
+	print WARNING + 'Please run the script using sudo e.g. sudo python raspiwrite.py, or sudo ./raspiwrite.py (need to chmod +x first)' + end
 	exit()
 checkforUpdate()
-print 'The following script is designed to copy a Raspberry Pi compatiable disk image to an SD Card'
+print 'The following script is designed to copy a Raspberry Pi compatible disk image to an SD Card'
 print boldStart + 'INCORRECTLY FOLLOWING THE WIZARD COULD RESULT IN THE CORRUPTION OF YOUR HARD DISK, PARTITIONS OR A BACKUP USB DRIVE (INCLUDING MOUNTED TIME MACHINE BACKUP DRIVES)' +end
 print 'It is advisable to remove any other USB HDDs or memory sticks, the wizard might select that one, %s if you have multiple hard drives installed, please take a LOT of care selecting the right drive %s'% (boldStart, end) 
 text = getoutput('df -h')
-raw_input('Now enter your SD Card, press enter when you are ready...')
+raw_input('Now insert your SD Card, press enter when you are ready...')
 text2 = getoutput('df -h')
 print """
 \n---------------------------------------------------------
