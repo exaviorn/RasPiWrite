@@ -79,7 +79,7 @@ Please download the latest version of RasPiWrite from %s''' % dlURL
 			print '''#####################################################################################################################
 			'''
 		else:
-			print '''Your version of RasPiWrite is up to date
+			print '''Your version of RasPiWrite is up-to-date
 			'''
 
 	except urllib2.URLError, e:
@@ -285,7 +285,7 @@ Thank You for using RasPiWrite, you are now free to eject your drive
 def getImage(SD): #gives the user a bunch of options to download an image, or select their own, it then passes the user on to the transfer function
 	global boldStart
 	global end
-	userChoice = raw_input('Do you wish to Download a Raspberry Pi compatiable image (choose yes if you don\'t have one) (Y/n): ')
+	userChoice = raw_input('Do you wish to Download a Raspberry Pi compatible image (choose yes if you don\'t have one) (Y/n): ')
 	if (userChoice == 'Y') or (userChoice == 'y'):
 		print boldStart + """
 > Debian \"Squeeze\" [OPTION 1]""" + end + """
@@ -364,7 +364,7 @@ WARNING: THE FOLLOWING PREDICTED LOCATION MAY BE INCORRECT!
 		manualID = raw_input("Please enter the location you believe holds the SD Card: ")
 		driveTest(manualID)
 	else:
-		sdID = raw_input("I Believe this is your SD card: " + SD + " is that correct? (Y/n) ")
+		sdID = raw_input("I believe this is your SD card: " + SD + " is that correct? (Y/n) ")
 		if (sdID == 'Y') or (sdID == 'y'): #continue
 			unmount(SD) #<--works, so don't need to test
 			getImage(SD)
@@ -401,9 +401,9 @@ print """//////////////////////// """ + boldStart + """
 """
 OS = os.uname() #gets OS vars
 if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around some of the command differences
-	print WARNING + 'I\'m sorry, but your os isn\'t supported at this time, Linux/Unix users - please tune in soon for a POSIX version' + end
+	print WARNING + 'I\'m sorry, but your OS isn\'t supported at this time, Linux/Unix users - please tune in soon for a POSIX version' + end
 	exit()
-if not os.geteuid()==0
+if not os.geteuid()==0:
 	print WARNING + 'Please run the script using sudo e.g. sudo python raspiwrite.py, or sudo ./raspiwrite.py (need to chmod +x first)' + end
 	exit()
 checkforUpdate()
