@@ -340,12 +340,12 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 				print 'Found Zip'
 				#findDL('debian')
 				transfer(userLocate,'zip','usr',SD,'none')
-    		if matchGzip is not None:
-    			print 'found Gzip'
-    			transfer(userLocate, 'zip', 'usr',SD,'none')
-    		if matchBzip is not None:
-    			print 'found Bz2'
-    			transfer(userLocate, 'bz2', 'usr',SD,'none')
+			if matchGzip is not None:
+				print 'found Gzip'
+				transfer(userLocate, 'zip', 'usr',SD,'none')
+			if matchBzip is not None:
+				print 'found Bz2'
+				transfer(userLocate, 'bz2', 'usr',SD,'none')
     		
 				
 		else:
