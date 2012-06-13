@@ -34,12 +34,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# VERSION 1.1 -MACOSX- (May 2012)
-#	* Summary: Major fixes and renewal of and to the download system, manual system (although it still only works in the same folder as the script).
-# 	  An update system has also been included (Please see exaviorn.com for details)
-#	* For support, please go to raspi.exaviorn.com, or go to our github (https://github.com/exaviorn/RasPiWrite)
-#	* The script currently only works for Macs, however it can be changed with very little alterations, 
-#	  I will add in OS detection logic and the subsequent functions from there
+# VERSION 1.15 -MACOSX- (June 2012) BETA
+#	* Fix to unzipping system - credit to alecthegeek
+#	* More user friendly device selection, no chance of the root or time machine backup drive being selected
+#	* Some spelling and grammar corrections
+#	* FINALLY drag/drop file support, with full path support, e.g. /Users/me/Downloads - Thanks to Lewis Boon
 
 import re, os, urllib2, time, sys, threading
 from commands import *
@@ -47,7 +46,7 @@ from sys import exit
 from random import choice
 from xml.dom.minidom import parseString
 
-version = 1.1
+version = 1.15
 
 #Display Augs
 boldStart = "\033[1m"
@@ -71,13 +70,13 @@ def checkforUpdate():
 		dlURL = dom.getElementsByTagName('URL')[0].toxml().replace('<URL>','').replace('</URL>','')
 
 		if version < versionToDate:
-			print '#####################################################################################################################'
+			print WARNING + '#####################################################################################################################'
 			print 'Your current version (%s) of RasPiWrite is not the latest, please go to the link below to update to version %s,' % (version, versionToDate)
 			print 'The Changes include: %s' % summary
 			print '''
 Please download the latest version of RasPiWrite from %s''' % dlURL
 			print '''#####################################################################################################################
-			'''
+			''' + end
 		else:
 			print '''Your version of RasPiWrite is up-to-date
 			'''
@@ -85,6 +84,7 @@ Please download the latest version of RasPiWrite from %s''' % dlURL
 	except urllib2.URLError, e:
     		print """There was an error in checking for an update: %r
     		""" % e
+
 
 def grabRoot(distro): #Parses the raspberry pi downloads page for the links for the currently RasPiWrite supported distros
 	links  = list()
@@ -137,17 +137,20 @@ def download(url):		#http://stackoverflow.com/questions/22676/how-do-i-download-
 	    print status,
 	f.close()
 
-def cleanOutput(text, text2):	#cleans up the output from df -h
+def cleanOutput(text2):	#cleans up the output from df -h
 	#^(?=.*?\b/\b)(?=.*?\bdisk0)((?!Volume).)*$ <-- regex used
-	filename = "Example_file_(extra_descriptor).ext"
-	removeGarbage = re.compile(r'(?=devfs)([^>]*)(?=/dev/)')
+	#^(?:.(?<!/Volumes))*$
 	removeRootHDD = re.compile(r"(?=.*?\b/\b)(?=.*?\bdisk0)((?!Volume).)*")
-	cleanOutput = re.sub(removeRootHDD, '', re.sub(removeGarbage, '', text2))
-	return cleanOutput
+	blacklist = re.compile(r".*Backups|.*Backup.*|.*devfs.*|.*map.*")
+	cleanOutput = re.sub(removeRootHDD, ' ', text2)
+	filterblacklist = re.sub("(?m)^\s+", "", re.sub(blacklist,' ', cleanOutput))
+	return filterblacklist
 
 def matchSD(input):	#grabs just the drive's name from the df -h command (macOSX so far)
 	selectSD = r"(?=/)(.*?)\s"
 	match =  re.search(selectSD, input)
+	if match is None:
+		match = '0'
 	return match
 
 def unmount(location):	#unmounts the drive so that it can be rewrittern
@@ -172,7 +175,8 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
 def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	global path
 	if archiveType == 'zip': 
-		path =  file.replace(".zip", "") + '/' + file.replace(".zip", ".img")
+		#path =  file.replace(".zip", "") + '/' + file.replace(".zip", ".img") <- my old code
+		path = file.replace(".zip", "") + '/' + os.path.basename(file).replace(".zip", ".img") #Thanks to Lewis Boon
 		extractCMD = 'unzip ' + file
 	if archiveType == 'gz': 
 		path =  file.replace(".gz", "") #<-- verify
@@ -238,7 +242,6 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 				path = finalPath
 	global SDsnip
 	SDsnip =  SD.replace(' ', '')[:-2]
-	#print SDsnip <-debug
 	print path
 	print '\n\n###################################################################'
 	print 'About to start the transfer procedure, here is your setup:'
@@ -248,7 +251,7 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 > Type: %s
 	""" % (file.replace(".zip", ""), SDsnip, obtainType)
 	print """
-Remember that Matt Jump nor exaviorn.com can be to warranty for any destruction of data or hardware 
+Please remember that neither Matt Jump, exaviorn.com or any contributors can be held to warranty for any destruction of data or hardware 
 (excerpt from GNU GPL, which can be found in the script's source, as well as inside the script's folder):
 -----------------------------------------------------------------
 This program is distributed in the hope that it will be useful,
@@ -258,7 +261,7 @@ GNU General Public License for more details.
 -----------------------------------------------------------------
 	"""
 	print '###################################################################\n'
-	confirm = raw_input(boldStart + 'Please verify this information before hitting typing \'accept\', if this information isn\'t correct, please press ctrl + c (^C), or type \'exit\' to quit: ' + end)
+	confirm = raw_input(boldStart + 'Please verify this information before typing \'accept\' to accept the terms and to start the process, if this information isn\'t correct, please press ctrl + c (^C), or type \'exit\' to quit: ' + end)
 	if confirm == 'accept':
    		thread1 = transferInBackground()
    		thread1.start()
@@ -338,7 +341,6 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 
 			if matchZip is not None:
 				print 'Found Zip'
-				#findDL('debian')
 				transfer(userLocate,'zip','usr',SD,'none')
 			if matchGzip is not None:
 				print 'found Gzip'
@@ -354,16 +356,7 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 			exit()
 
 def driveTest(SD):
-	if (SD == '/dev') or (SD == '/') or (SD == '/home') or (SD == '/net'):
-		print WARNING + """ 
-#############################################################
-WARNING: THE FOLLOWING PREDICTED LOCATION MAY BE INCORRECT!
-	No reliable SD Card location could be found
-#############################################################
-""" + end
-		manualID = raw_input("Please enter the location you believe holds the SD Card: ")
-		driveTest(manualID)
-	else:
+	
 		sdID = raw_input("I believe this is your SD card: " + SD + " is that correct? (Y/n) ")
 		if (sdID == 'Y') or (sdID == 'y'): #continue
 			unmount(SD) #<--works, so don't need to test
@@ -397,7 +390,7 @@ print """//////////////////////// """ + boldStart + """
 * Matt Jump
 * exaviorn.com
 ////////////////////////
-(Version 1.1 -MACOSX-)
+(Version 1.15 -MACOSX-)
 """
 OS = os.uname() #gets OS vars
 if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around some of the command differences
@@ -417,8 +410,20 @@ print """
 \n---------------------------------------------------------
 """ + boldStart + """The following drives were found:
 """ + end
-volumes =  cleanOutput(text,text2)
+volumes =  cleanOutput(text2)
 print volumes
 print '---------------------------------------------------------\n'
-SD = matchSD(volumes).group(1) #selects the first SD/USB drive located
-driveTest(SD) #action gets delegated to driveTest, which then leads on to the next step, I found this to be the easiest way
+if matchSD(volumes) == '0': #if no  device found
+	print WARNING + """ 
+	#############################################################
+	WARNING: No reliable SD Card location could be found, please 
+	insert a SD card device and try again, if you are certain 
+	about the location of the SD card, you can manually override 
+	it below
+	#############################################################
+	""" + end
+	manualID = raw_input("Please enter the location you believe holds the SD Card: ")
+	driveTest(manualID)
+else: #otherwise...
+	SD = matchSD(volumes).group(1) #selects the first SD/USB drive located
+	driveTest(SD) #action gets delegated to driveTest, which then leads on to the next step, I found this to be the easiest way
