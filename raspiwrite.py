@@ -408,7 +408,7 @@ raw_input('Now insert your SD Card, press enter when you are ready...')
 text2 = getoutput('df -h')
 print """
 \n---------------------------------------------------------
-""" + boldStart + """The following drives were found:
+""" + boldStart + """The following drives were found, please verify the name of the SD card in finder with the name under the \'Mounted On\' column (after \'/volumes/\'):
 """ + end
 volumes =  cleanOutput(text2)
 print volumes
