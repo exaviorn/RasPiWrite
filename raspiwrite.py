@@ -178,6 +178,11 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		#path =  file.replace(".zip", "") + '/' + file.replace(".zip", ".img") <- my old code
 		path = file.replace(".zip", "") + '/' + os.path.basename(file).replace(".zip", ".img") #Thanks to Lewis Boon
 		extractCMD = 'unzip ' + file
+
+	if archiveType == 'img': 
+		path =  file;
+		extractCMD = 'echo No extracttion required for ' + file
+
 	if archiveType == 'gz': 
 		path =  file.replace(".gz", "") #<-- verify
 		extractCMD = 'gunzip ' + file
@@ -338,7 +343,11 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 			matchZip = re.match('^.*\.zip$',userLocate)
 			matchGzip = re.match('^.*\.img.gz$',userLocate)
 			matchBzip = re.match('^.*\.tar.bz2$',userLocate)
+			matchImg = re.match('^.*\.img$',userLocate)
 
+			if matchImg is not None:
+				print 'Found Image file'
+				transfer(userLocate,'img','usr',SD,'none')
 			if matchZip is not None:
 				print 'Found Zip'
 				transfer(userLocate,'zip','usr',SD,'none')
