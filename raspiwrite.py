@@ -53,6 +53,8 @@ boldStart = "\033[1m"
 end = "\033[0;0m"
 WARNING = '\033[0;31m'
 
+OS = os.uname() #gets OS vars
+
 def checkforUpdate():
 	print 'Checking for updates...'
 	global version
@@ -154,8 +156,12 @@ def matchSD(input):	#grabs just the drive's name from the df -h command (macOSX 
 	return match
 
 def unmount(location):	#unmounts the drive so that it can be rewrittern
+	global OS
 	print 'Unmounting the drive in preparation for writing...'
-	output = getoutput('diskutil unmount ' + location)
+	if OS[0] != 'Darwin':
+		output = getoutput('umount ' + location)
+	else:
+		output = getoutput('diskutil unmount ' + location)
 	print output
 	if 'Unmount failed for' in output:
 		print WARNING + 'Error, the Following drive couldn\'t be unmounted, exiting...' + end
@@ -166,8 +172,9 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
    def run ( self ):
 	global SDsnip
 	global path
-	copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
+	copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
 	print 'Running ' + copyString + '...'
+
 	print getoutput(copyString)
 	print 'done!'
      
@@ -234,6 +241,12 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 				else:
 					print 'Image has already been unzipped'
 				path = finalPath
+
+			if OS[0] != 'Darwin':
+				print getoutput('pwd')
+				path = getoutput("pwd")+ "/" + file.split("/")[-1].replace(".zip", "") + "/" + file.split("/")[-1].replace(".zip", ".img")
+				print path
+				print "Not Darwin\n"
 		else:
 			print 'Ok... Unzipping the disk , this may take a while...'
 			print getoutput(extractCMD) #extract here!
@@ -245,8 +258,17 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 				else:
 					print 'Image has already been unzipped'
 				path = finalPath
+
+			if OS[0] != 'Darwin':
+				print getoutput('pwd')
+				path = getoutput("pwd")+ "/" + file.split("/")[-1].replace(".zip", "") + "/" + file.split("/")[-1].replace(".zip", ".img")
+				print path
+				print "Not Darwin\n"
 	global SDsnip
-	SDsnip =  SD.replace(' ', '')[:-2]
+	if (SD.find("/dev/mmcblk") + 1):
+		SDsnip = "/dev/mmcblk" + SD[11]
+	else:
+		SDsnip =  SD.replace(' ', '')[:-1]
 	print path
 	print '\n\n###################################################################'
 	print 'About to start the transfer procedure, here is your setup:'
@@ -401,10 +423,9 @@ print """//////////////////////// """ + boldStart + """
 ////////////////////////
 (Version 1.15 -MACOSX-)
 """
-OS = os.uname() #gets OS vars
 if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around some of the command differences
 	print WARNING + 'I\'m sorry, but your OS isn\'t supported at this time, Linux/Unix users - please tune in soon for a POSIX version' + end
-	exit()
+#	exit()
 if not os.geteuid()==0:
 	print WARNING + 'Please run the script using sudo e.g. sudo python raspiwrite.py, or sudo ./raspiwrite.py (need to chmod +x first)' + end
 	exit()

@@ -5,7 +5,7 @@
 ## About
 RasPiWrite is a simple and easily modifiable Python script that automates the process of mounting an SD card and downloading and installing a Linux image for a [Raspberry Pi](http://raspberrypi.org). 
 
-Currently the script is only compatible with Mac OS X systems, mostly because Macs have no easy way of installing Raspberry Pi distros. The goal is to try to make the script universal for all UNIX-like systems over time.
+While this script has is fully functioning on Mac OS X, it now has at least working support for unix (Tested only on Ubuntu)
 
 ## Install
 
