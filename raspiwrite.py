@@ -172,7 +172,10 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
    def run ( self ):
 	global SDsnip
 	global path
-	copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
+	if OS[0] != 'Darwin':
+		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
+	else
+		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
 	print 'Running ' + copyString + '...'
 
 	print getoutput(copyString)
