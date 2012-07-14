@@ -172,7 +172,10 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
    def run ( self ):
 	global SDsnip
 	global path
-	copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
+	if OS[0] != 'Darwin':
+		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
+	else
+		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
 	print 'Running ' + copyString + '...'
 
 	print getoutput(copyString)
@@ -268,7 +271,12 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	if (SD.find("/dev/mmcblk") + 1):
 		SDsnip = "/dev/mmcblk" + SD[11]
 	else:
-		SDsnip =  SD.replace(' ', '')[:-1]
+		if OS[0] != 'Darwin': 
+        	SDsnip =  SD.replace(' ', '')[:-1]
+ 		else:
+ 			# remove weird partition notation in OS X partition names
+        	SDsnip =  SD.replace(' ', '')[:-2]
+
 	print path
 	print '\n\n###################################################################'
 	print 'About to start the transfer procedure, here is your setup:'
