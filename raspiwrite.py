@@ -309,10 +309,10 @@ GNU General Public License for more details.
    		print 'Transfer Complete! Please remove the SD card'
    		print """###########################################
 Relevent information:
-> Debian - Login is pi/raspberry
-> Arch - Login is root/root
-> Fedora - Login is root/fedoraarm
-> QtonPi - Login is root/rootme
+> Raspbian - Login is pi/raspberry
+> Arch     - Login is root/root
+> Fedora   - Login is root/fedoraarm
+> QtonPi   - Login is root/rootme
 ###########################################
 Thank You for using RasPiWrite, you are now free to eject your drive 
    		"""
@@ -326,9 +326,9 @@ def getImage(SD): #gives the user a bunch of options to download an image, or se
 	userChoice = raw_input('Do you wish to Download a Raspberry Pi compatible image (choose yes if you don\'t have one) (Y/n): ')
 	if (userChoice == 'Y') or (userChoice == 'y'):
 		print boldStart + """
-> Debian \"Squeeze\" [OPTION 1]""" + end + """
-Reference root filesystem from Gray and Dom, containing LXDE, Midori, development tools 
-and example source code for multimedia functions.
+> Raspbian \"Wheezy\" [OPTION 1]""" + end + """
+Reference root filesystem from Alex and Dom, based on Raspbian optimised version of Debian. 
+Contains LXDE, Midori, development tools and example source code for multimedia functions.
 		"""
 		print boldStart + """
 > Arch Linux [OPTION 2]""" + end + """
@@ -347,10 +347,10 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 		"""
 		osChoice = raw_input('Your Choice e.g: \'1\' : ')
 		if osChoice == '1':
-			URL = choice(getZipUrl(grabRoot('debian')))
+			URL = choice(getZipUrl(grabRoot('raspbian')))
 			#URL = findDL('debian')
-			print 'Downloading Debian from [%s]'% URL
-			match = grabRoot('debian').rpartition('/')
+			print 'Downloading Raspbian from [%s]'% URL
+			match = grabRoot('raspbian').rpartition('/')
 			transfer(match[-1],'zip','dl',SD,URL)
 		if osChoice == '2':
 			URL = choice(getZipUrl(grabRoot('arch')))
