@@ -176,6 +176,13 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
 		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
 	else
 		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
+	
+	### FIXME: Bletcherous hack, to get around the fact that Rasbian 'wheezy' does not unzip into a sub-directory
+	### The Raspberry Pi people should fix this, but until then, this trims the leading directory
+	if 'wheezy' in copyString:
+		copyString = re.sub("if=.*?/", "if=", copyString)
+	###/FIXME
+		
 	print 'Running ' + copyString + '...'
 
 	print getoutput(copyString)
@@ -320,6 +327,7 @@ Thank You for using RasPiWrite, you are now free to eject your drive
 		print 'ENDING WITHOUT COPYING ANY DATA ACROSS, SD CARD HAS BEEN UNMOUNTED'
 		exit()
 
+### ALTERED: s/Debian/Raspian/ throughout getImage(), in order to reflect the new #1 recommendation
 def getImage(SD): #gives the user a bunch of options to download an image, or select their own, it then passes the user on to the transfer function
 	global boldStart
 	global end
@@ -352,6 +360,7 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 			print 'Downloading Raspbian from [%s]'% URL
 			match = grabRoot('raspbian').rpartition('/')
 			transfer(match[-1],'zip','dl',SD,URL)
+###/ALTERED
 		if osChoice == '2':
 			URL = choice(getZipUrl(grabRoot('arch')))
 			print 'Downloading Arch Linux from [%s]'% URL
