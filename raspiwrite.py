@@ -40,6 +40,9 @@
 #	* Some spelling and grammar corrections
 #	* FINALLY drag/drop file support, with full path support, e.g. /Users/me/Downloads - Thanks to Lewis Boon
 
+# July 2012 -- clay@shirky.com
+# Updated to reflect the new #1 recommendation, the Raspbian OS. (Changes are between #ALTERED and #/ALTERED comments). Also added horrible hack to reflect the fact that the Raspbian .zip file does not unzip into a sub-dir, unlike the old Debian 'squeeze' distro. (Changes between #FIXME and #/FIXME)
+
 import re, os, urllib2, time, sys, threading
 from commands import *
 from sys import exit
