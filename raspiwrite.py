@@ -40,6 +40,9 @@
 #	* Some spelling and grammar corrections
 #	* FINALLY drag/drop file support, with full path support, e.g. /Users/me/Downloads - Thanks to Lewis Boon
 
+# July 2012 -- clay@shirky.com
+# Updated to reflect the new #1 recommendation, the Raspbian OS. (Changes are between #ALTERED and #/ALTERED comments). Also added horrible hack to reflect the fact that the Raspbian .zip file does not unzip into a sub-dir, unlike the old Debian 'squeeze' distro. (Changes between #FIXME and #/FIXME)
+
 import re, os, urllib2, time, sys, threading
 from commands import *
 from sys import exit
@@ -176,6 +179,13 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
 		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
 	else
 		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
+	
+	### FIXME: Bletcherous hack, to get around the fact that Rasbian 'wheezy' does not unzip into a sub-directory
+	### The Raspberry Pi people should fix this, but until then, this trims the leading directory
+	if 'wheezy' in copyString:
+		copyString = re.sub("if=.*?/", "if=", copyString)
+	###/FIXME
+		
 	print 'Running ' + copyString + '...'
 
 	print getoutput(copyString)
@@ -309,10 +319,10 @@ GNU General Public License for more details.
    		print 'Transfer Complete! Please remove the SD card'
    		print """###########################################
 Relevent information:
-> Debian - Login is pi/raspberry
-> Arch - Login is root/root
-> Fedora - Login is root/fedoraarm
-> QtonPi - Login is root/rootme
+> Raspbian - Login is pi/raspberry
+> Arch     - Login is root/root
+> Fedora   - Login is root/fedoraarm
+> QtonPi   - Login is root/rootme
 ###########################################
 Thank You for using RasPiWrite, you are now free to eject your drive 
    		"""
@@ -320,15 +330,16 @@ Thank You for using RasPiWrite, you are now free to eject your drive
 		print 'ENDING WITHOUT COPYING ANY DATA ACROSS, SD CARD HAS BEEN UNMOUNTED'
 		exit()
 
+### ALTERED: s/Debian/Raspian/ throughout getImage(), in order to reflect the new #1 recommendation
 def getImage(SD): #gives the user a bunch of options to download an image, or select their own, it then passes the user on to the transfer function
 	global boldStart
 	global end
 	userChoice = raw_input('Do you wish to Download a Raspberry Pi compatible image (choose yes if you don\'t have one) (Y/n): ')
 	if (userChoice == 'Y') or (userChoice == 'y'):
 		print boldStart + """
-> Debian \"Squeeze\" [OPTION 1]""" + end + """
-Reference root filesystem from Gray and Dom, containing LXDE, Midori, development tools 
-and example source code for multimedia functions.
+> Raspbian \"Wheezy\" [OPTION 1]""" + end + """
+Reference root filesystem from Alex and Dom, based on Raspbian optimised version of Debian. 
+Contains LXDE, Midori, development tools and example source code for multimedia functions.
 		"""
 		print boldStart + """
 > Arch Linux [OPTION 2]""" + end + """
@@ -347,11 +358,12 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 		"""
 		osChoice = raw_input('Your Choice e.g: \'1\' : ')
 		if osChoice == '1':
-			URL = choice(getZipUrl(grabRoot('debian')))
+			URL = choice(getZipUrl(grabRoot('raspbian')))
 			#URL = findDL('debian')
-			print 'Downloading Debian from [%s]'% URL
-			match = grabRoot('debian').rpartition('/')
+			print 'Downloading Raspbian from [%s]'% URL
+			match = grabRoot('raspbian').rpartition('/')
 			transfer(match[-1],'zip','dl',SD,URL)
+###/ALTERED
 		if osChoice == '2':
 			URL = choice(getZipUrl(grabRoot('arch')))
 			print 'Downloading Arch Linux from [%s]'% URL
