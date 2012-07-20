@@ -169,14 +169,21 @@ def unmount(location):	#unmounts the drive so that it can be rewrittern
 
 class transferInBackground (threading.Thread): 	#Runs the dd command in a thread so that I can give a waiting... indicator
 
-   def run ( self ):
-	global SDsnip
-	global path
-	copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
-	print 'Running ' + copyString + '...'
+    def run ( self ):
+        global SDsnip
+        global path
+        global OS
 
-	print getoutput(copyString)
-	print 'done!'
+        if OS[0] != 'Darwin':
+            megabytes = "M"
+        else:
+            megabytes = "m"
+
+        copyString = 'dd bs=1' + megabytes + ' if=%s of=%s' % (path,SDsnip)
+        print 'Running ' + copyString + '...'
+
+        print getoutput(copyString)
+        print 'done!'
      
 
 def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
