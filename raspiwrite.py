@@ -11,8 +11,8 @@
 # .kkx0NXk'...dNNxldK'
 #  'k...0o....,O...d: 
 #   ;o;'oM0olkWc.;oc  
-#     .cOx....dOl.    
-#        .x00k.    
+#	 .cOx....dOl.	
+#		.x00k.	
 
 #//////////////////////////// 
 #	* Raspberry Pi SD Writer 
@@ -22,17 +22,17 @@
 # Copyright Matthew Jump 2012
 # The following code is licenced under the Gnu Public Licence, please see gpl.txt for reference
 #  This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
+#	it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+#	(at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#	You should have received a copy of the GNU General Public License
+#	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # VERSION 1.15 -MACOSX- (June 2012) BETA
 #	* Fix to unzipping system - credit to alecthegeek
@@ -84,8 +84,8 @@ Please download the latest version of RasPiWrite from %s''' % dlURL
 			'''
 
 	except urllib2.URLError, e:
-    		print """There was an error in checking for an update: %r
-    		""" % e
+			print """There was an error in checking for an update: %r
+			""" % e
 
 
 def grabRoot(distro): #Parses the raspberry pi downloads page for the links for the currently RasPiWrite supported distros
@@ -103,8 +103,8 @@ def getZipUrl(url): #gets all the urls that end in .zip or .tar.bz2 (only two di
 	htmlSource = urllib2.urlopen(url).read()
 	linksList = re.findall('<a href="?([^\s^"]+)',htmlSource)
 	for link in linksList:
-	    if link.endswith('.zip') or link.endswith('.tar.bz2'):
-	    	 links.append(link)
+		if link.endswith('.zip') or link.endswith('.tar.bz2'):
+			 links.append(link)
 	return links
 
 def findDL(OS): #legacy reasons (Rasberry Pi website doesn't currently list Fedora - http://www.raspberrypi.org/phpBB3/viewtopic.php?f=2&t=5624)
@@ -129,14 +129,14 @@ def download(url):		#http://stackoverflow.com/questions/22676/how-do-i-download-
 	file_size_dl = 0
 	block_sz = 8192
 	while True:
-	    buffer = u.read(block_sz)
-	    if not buffer:
-	        break
-	    file_size_dl += len(buffer)
-	    f.write(buffer)
-	    status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-	    status = status + chr(8)*(len(status)+1)
-	    print status,
+		buffer = u.read(block_sz)
+		if not buffer:
+			break
+		file_size_dl += len(buffer)
+		f.write(buffer)
+		status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
+		status = status + chr(8)*(len(status)+1)
+		print status,
 	f.close()
 
 def cleanOutput(text2):	#cleans up the output from df -h
@@ -167,20 +167,20 @@ def unmount(location):	#unmounts the drive so that it can be rewrittern
 		print WARNING + 'Error, the Following drive couldn\'t be unmounted, exiting...' + end
 		exit()
 
-class transferInBackground (threading.Thread): 	#Runs the dd command in a thread so that I can give a waiting... indicator
+class transferInBackground (threading.Thread):	 #Runs the dd command in a thread so that I can give a waiting... indicator
 
    def run ( self ):
 	global SDsnip
 	global path
 	if OS[0] != 'Darwin':
 		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
-	else
+	else:
 		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
 	print 'Running ' + copyString + '...'
 
 	print getoutput(copyString)
 	print 'done!'
-     
+	 
 
 def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	global path
@@ -272,10 +272,10 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		SDsnip = "/dev/mmcblk" + SD[11]
 	else:
 		if OS[0] != 'Darwin': 
-        	SDsnip =  SD.replace(' ', '')[:-1]
- 		else:
- 			# remove weird partition notation in OS X partition names
-        	SDsnip =  SD.replace(' ', '')[:-2]
+			SDsnip = SD.replace(' ', '')[:-1]
+		else:
+			# remove weird partition notation in OS X partition names
+			SDsnip =  SD.replace(' ', '')[:-2]
 
 	print path
 	print '\n\n###################################################################'
@@ -298,16 +298,16 @@ GNU General Public License for more details.
 	print '###################################################################\n'
 	confirm = raw_input(boldStart + 'Please verify this information before typing \'accept\' to accept the terms and to start the process, if this information isn\'t correct, please press ctrl + c (^C), or type \'exit\' to quit: ' + end)
 	if confirm == 'accept':
-   		thread1 = transferInBackground()
-   		thread1.start()
+		thread1 = transferInBackground()
+		thread1.start()
 		sys.stdout.write("Waiting")
-   		sys.stdout.flush()
+		sys.stdout.flush()
 		while thread1.isAlive():
 			time.sleep(3)
 			sys.stdout.write(".")
-   			sys.stdout.flush()
-   		print 'Transfer Complete! Please remove the SD card'
-   		print """###########################################
+			sys.stdout.flush()
+			print 'Transfer Complete! Please remove the SD card'
+			print """###########################################
 Relevent information:
 > Debian - Login is pi/raspberry
 > Arch - Login is root/root
@@ -315,7 +315,7 @@ Relevent information:
 > QtonPi - Login is root/rootme
 ###########################################
 Thank You for using RasPiWrite, you are now free to eject your drive 
-   		"""
+		   """
 	else:
 		print 'ENDING WITHOUT COPYING ANY DATA ACROSS, SD CARD HAS BEEN UNMOUNTED'
 		exit()
@@ -387,7 +387,7 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 			if matchBzip is not None:
 				print 'found Bz2'
 				transfer(userLocate, 'bz2', 'usr',SD,'none')
-    		
+			
 				
 		else:
 			print 'sorry, the file you have specified doesn\'t exist, please try again'
@@ -421,8 +421,8 @@ O..Nc...:XNl...:X.,X
 .kkx0NXk'...dNNxldK'
  'k...0o....,O...d: 
   ;o;'oM0olkWc.;oc  
-    .cOx....dOl.    
-       .x00k.    
+	.cOx....dOl.	
+	   .x00k.	
 """ + end
 print """//////////////////////// """ + boldStart + """
 * Raspberry Pi SD Writer """ + end + """
