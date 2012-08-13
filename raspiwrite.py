@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 
-#   ;d0KOd.  .oOK0x:  
-#  0xlllcoxolkolllloX 
-#  ;OccloddKNdxdocckc 
-#   .dkddkWNNMOdoxd,  
-#   .o:,x0....xd,ck'  
-#   K:xOoloOOccloocW  
+#   ;d0KOd.  .oOK0x:
+#  0xlllcoxolkolllloX
+#  ;OccloddKNdxdocckc
+#   .dkddkWNNMOdoxd,
+#   .o:,x0....xd,ck'
+#   K:xOoloOOccloocW
 # .x;N:....xO....'K;k,
 # O..Nc...:XNl...:X.,X
 # .kkx0NXk'...dNNxldK'
-#  'k...0o....,O...d: 
-#   ;o;'oM0olkWc.;oc  
-#     .cOx....dOl.    
-#        .x00k.    
+#  'k...0o....,O...d:
+#   ;o;'oM0olkWc.;oc
+#     .cOx....dOl.
+#        .x00k.
 
-#//////////////////////////// 
-#	* Raspberry Pi SD Writer 
+#////////////////////////////
+#	* Raspberry Pi SD Writer
 #	* Matt Jump
 #	* exaviorn.com
 #///////////////////////////
@@ -174,30 +174,30 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
 	global path
 	if OS[0] != 'Darwin':
 		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
-	else
+	else:
 		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
 	print 'Running ' + copyString + '...'
 
 	print getoutput(copyString)
 	print 'done!'
-     
+
 
 def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	global path
-	if archiveType == 'zip': 
+	if archiveType == 'zip':
 		#path =  file.replace(".zip", "") + '/' + file.replace(".zip", ".img") <- my old code
 		path = file.replace(".zip", "") + '/' + os.path.basename(file).replace(".zip", ".img") #Thanks to Lewis Boon
 		extractCMD = 'unzip ' + file
 
-	if archiveType == 'img': 
+	if archiveType == 'img':
 		path =  file;
 		extractCMD = 'echo No extracttion required for ' + file
 
-	if archiveType == 'gz': 
+	if archiveType == 'gz':
 		path =  file.replace(".gz", "") #<-- verify
 		extractCMD = 'gunzip ' + file
 
-	if archiveType == 'bz2': 
+	if archiveType == 'bz2':
 		path = '' #probably don't need, but I found during debug that the interpreter would complain about the var not being defined
 		#QtonPi making me jump through hoops:
 		basePath =  file.replace(".tar.bz2", "")
@@ -207,7 +207,7 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		extractCMD = 'tar jxf ' + file
 		path = basePath
 
-	if obtain == 'dl': 
+	if obtain == 'dl':
 		obtainType = 'Downloaded by this client (reliable and safe)'
 		if (os.path.exists(path)):
 			print 'archive already has been extracted, skipping unzipping...'
@@ -231,7 +231,7 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 				else:
 					print 'Image has already been unzipped'
 				path = finalPath
-	if obtain == 'usr': 
+	if obtain == 'usr':
 		obtainType = 'Obtained by user and passed in (potentially dangerous)'
 		print 'Found archive inputted by user, extracting...'
 		if (os.path.exists(path)):
@@ -271,11 +271,11 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	if (SD.find("/dev/mmcblk") + 1):
 		SDsnip = "/dev/mmcblk" + SD[11]
 	else:
-		if OS[0] != 'Darwin': 
-        	SDsnip =  SD.replace(' ', '')[:-1]
- 		else:
- 			# remove weird partition notation in OS X partition names
-        	SDsnip =  SD.replace(' ', '')[:-2]
+		if OS[0] != 'Darwin':
+				SDsnip =  SD.replace(' ', '')[:-1]
+		else:
+				# remove weird partition notation in OS X partition names
+				SDsnip =  SD.replace(' ', '')[:-2]
 
 	print path
 	print '\n\n###################################################################'
@@ -286,7 +286,7 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 > Type: %s
 	""" % (file.replace(".zip", ""), SDsnip, obtainType)
 	print """
-Please remember that neither Matt Jump, exaviorn.com or any contributors can be held to warranty for any destruction of data or hardware 
+Please remember that neither Matt Jump, exaviorn.com or any contributors can be held to warranty for any destruction of data or hardware
 (excerpt from GNU GPL, which can be found in the script's source, as well as inside the script's folder):
 -----------------------------------------------------------------
 This program is distributed in the hope that it will be useful,
@@ -314,7 +314,7 @@ Relevent information:
 > Fedora - Login is root/fedoraarm
 > QtonPi - Login is root/rootme
 ###########################################
-Thank You for using RasPiWrite, you are now free to eject your drive 
+Thank You for using RasPiWrite, you are now free to eject your drive
    		"""
 	else:
 		print 'ENDING WITHOUT COPYING ANY DATA ACROSS, SD CARD HAS BEEN UNMOUNTED'
@@ -327,18 +327,18 @@ def getImage(SD): #gives the user a bunch of options to download an image, or se
 	if (userChoice == 'Y') or (userChoice == 'y'):
 		print boldStart + """
 > Debian \"Squeeze\" [OPTION 1]""" + end + """
-Reference root filesystem from Gray and Dom, containing LXDE, Midori, development tools 
+Reference root filesystem from Gray and Dom, containing LXDE, Midori, development tools
 and example source code for multimedia functions.
 		"""
 		print boldStart + """
 > Arch Linux [OPTION 2]""" + end + """
-Arch Linux ARM is based on Arch Linux, which aims for simplicity and full control to the 
+Arch Linux ARM is based on Arch Linux, which aims for simplicity and full control to the
 end user. Note that this distribution may not be suitable for beginners.
 		"""
 		print boldStart + """
 > Fedora 14 [OPTION 3]""" + end + """
 (raspberrypi-fedora-remix-14-r1)
-The Raspberry Pi recommended choice for beginners, features a full GUI and applications for 
+The Raspberry Pi recommended choice for beginners, features a full GUI and applications for
 productivity and programming
 		"""
 		print boldStart + """
@@ -387,42 +387,42 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 			if matchBzip is not None:
 				print 'found Bz2'
 				transfer(userLocate, 'bz2', 'usr',SD,'none')
-    		
-				
+
+
 		else:
 			print 'sorry, the file you have specified doesn\'t exist, please try again'
 			print 'Press ctrl + c (^C) to quit'
 			exit()
 
 def driveTest(SD):
-	
+
 		sdID = raw_input("I believe this is your SD card: " + SD + " is that correct? (Y/n) ")
 		if (sdID == 'Y') or (sdID == 'y'): #continue
 			unmount(SD) #<--works, so don't need to test
 			getImage(SD)
-			
+
 		if (sdID == 'N') or (sdID == 'n'):
 			manualID = raw_input("Please enter the location you believe holds the SD Card: ")
 			driveTest(manualID)
 
 #logic:
-#most of this stuff is pretty self explanitory, some of it could be put into a function, but I don't like 
+#most of this stuff is pretty self explanitory, some of it could be put into a function, but I don't like
 #having loads of micro functions (the ones I do have are going to be expanded to cover all unix based OS's)
 print getoutput('clear')
 print boldStart + """
-  ;d0KOd.  .oOK0x:  
- 0xlllcoxolkolllloX 
- ;OccloddKNdxdocckc 
-  .dkddkWNNMOdoxd,  
-  .o:,x0....xd,ck'  
-  K:xOoloOOccloocW  
+  ;d0KOd.  .oOK0x:
+ 0xlllcoxolkolllloX
+ ;OccloddKNdxdocckc
+  .dkddkWNNMOdoxd,
+  .o:,x0....xd,ck'
+  K:xOoloOOccloocW
 .x;N:....xO....'K;k,
 O..Nc...:XNl...:X.,X
 .kkx0NXk'...dNNxldK'
- 'k...0o....,O...d: 
-  ;o;'oM0olkWc.;oc  
-    .cOx....dOl.    
-       .x00k.    
+ 'k...0o....,O...d:
+  ;o;'oM0olkWc.;oc
+    .cOx....dOl.
+       .x00k.
 """ + end
 print """//////////////////////// """ + boldStart + """
 * Raspberry Pi SD Writer """ + end + """
@@ -440,7 +440,7 @@ if not os.geteuid()==0:
 checkforUpdate()
 print 'The following script is designed to copy a Raspberry Pi compatible disk image to an SD Card'
 print boldStart + 'INCORRECTLY FOLLOWING THE WIZARD COULD RESULT IN THE CORRUPTION OF YOUR HARD DISK, PARTITIONS OR A BACKUP USB DRIVE (INCLUDING MOUNTED TIME MACHINE BACKUP DRIVES)' +end
-print 'It is advisable to remove any other USB HDDs or memory sticks, the wizard might select that one, %s if you have multiple hard drives installed, please take a LOT of care selecting the right drive %s'% (boldStart, end) 
+print 'It is advisable to remove any other USB HDDs or memory sticks, the wizard might select that one, %s if you have multiple hard drives installed, please take a LOT of care selecting the right drive %s'% (boldStart, end)
 text = getoutput('df -h')
 raw_input('Now insert your SD Card, press enter when you are ready...')
 text2 = getoutput('df -h')
@@ -452,11 +452,11 @@ volumes =  cleanOutput(text2)
 print volumes
 print '---------------------------------------------------------\n'
 if matchSD(volumes) == '0': #if no  device found
-	print WARNING + """ 
+	print WARNING + """
 	#############################################################
-	WARNING: No reliable SD Card location could be found, please 
-	insert a SD card device and try again, if you are certain 
-	about the location of the SD card, you can manually override 
+	WARNING: No reliable SD Card location could be found, please
+	insert a SD card device and try again, if you are certain
+	about the location of the SD card, you can manually override
 	it below
 	#############################################################
 	""" + end
