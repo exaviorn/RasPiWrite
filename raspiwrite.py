@@ -55,39 +55,6 @@ WARNING = '\033[0;31m'
 
 OS = os.uname() #gets OS vars
 
-def checkforUpdate():
-	print 'Checking for updates...'
-	global version
-
-	try:
-		file = urllib2.urlopen('http://www.exaviorn.com/raspiwrite.xml', timeout = 1)
-
-		data = file.read()
-		file.close()
-
-		dom = parseString(data)
-
-		versionToDate = float(dom.getElementsByTagName('Version')[0].toxml().replace('<Version>','').replace('</Version>',''))
-		summary = dom.getElementsByTagName('Summary')[0].toxml().replace('<Summary>','').replace('</Summary>','')
-		dlURL = dom.getElementsByTagName('URL')[0].toxml().replace('<URL>','').replace('</URL>','')
-
-		if version < versionToDate:
-			print WARNING + '#####################################################################################################################'
-			print 'Your current version (%s) of RasPiWrite is not the latest, please go to the link below to update to version %s,' % (version, versionToDate)
-			print 'The Changes include: %s' % summary
-			print '''
-Please download the latest version of RasPiWrite from %s''' % dlURL
-			print '''#####################################################################################################################
-			''' + end
-		else:
-			print '''Your version of RasPiWrite is up-to-date
-			'''
-
-	except urllib2.URLError, e:
-    		print """There was an error in checking for an update: %r
-    		""" % e
-
-
 def grabRoot(distro): #Parses the raspberry pi downloads page for the links for the currently RasPiWrite supported distros
 	links  = list()
 	htmlSource = urllib2.urlopen('http://www.raspberrypi.org/downloads').read()
@@ -435,7 +402,7 @@ if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around
 if not os.geteuid()==0:
 	print WARNING + 'Please run the script using sudo e.g. sudo python raspiwrite.py, or sudo ./raspiwrite.py (need to chmod +x first)' + end
 	exit()
-checkforUpdate()
+
 print 'The following script is designed to copy a Raspberry Pi compatible disk image to an SD Card'
 print boldStart + 'INCORRECTLY FOLLOWING THE WIZARD COULD RESULT IN THE CORRUPTION OF YOUR HARD DISK, PARTITIONS OR A BACKUP USB DRIVE (INCLUDING MOUNTED TIME MACHINE BACKUP DRIVES)' +end
 print 'It is advisable to remove any other USB HDDs or memory sticks, the wizard might select that one, %s if you have multiple hard drives installed, please take a LOT of care selecting the right drive %s'% (boldStart, end) 
