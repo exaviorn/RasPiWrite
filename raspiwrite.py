@@ -48,12 +48,14 @@ from xml.dom.minidom import parseString
 
 version = 1.15
 
-#Display Augs
+# Display Augs
 boldStart = "\033[1m"
 end = "\033[0;0m"
 WARNING = '\033[0;31m'
 
-OS = os.uname() #gets OS vars
+# Gets OS vars
+OS = os.uname()
+
 
 def checkforUpdate():
 	print 'Checking for updates...'
@@ -103,8 +105,8 @@ def getZipUrl(url): #gets all the urls that end in .zip or .tar.bz2 (only two di
 	htmlSource = urllib2.urlopen(url).read()
 	linksList = re.findall('<a href="?([^\s^"]+)',htmlSource)
 	for link in linksList:
-	    if link.endswith('.zip') or link.endswith('.tar.bz2'):
-	    	 links.append(link)
+		if link.endswith('.zip') or link.endswith('.tar.bz2'):
+			links.append(link)
 	return links
 
 def findDL(OS): #legacy reasons (Rasberry Pi website doesn't currently list Fedora - http://www.raspberrypi.org/phpBB3/viewtopic.php?f=2&t=5624)
@@ -118,8 +120,8 @@ def findDL(OS): #legacy reasons (Rasberry Pi website doesn't currently list Fedo
 			'http://raspberrypi.reon.hu/images/fedora/14/r1-06-03-2012/raspberrypi-fedora-remix-14-r1.img.gz']
 	if OS == 'fedora': return choice(fedora)
 
-
-def download(url):		#http://stackoverflow.com/questions/22676/how-do-i-download-a-file-over-http-using-python | Downloads the disk image for the user
+#http://stackoverflow.com/questions/22676/how-do-i-download-a-file-over-http-using-python | Downloads the disk image for the user
+def download(url):
 	file_name = url.split('/')[-1]
 	u = urllib2.urlopen(url)
 	f = open(file_name, 'wb')
@@ -129,14 +131,14 @@ def download(url):		#http://stackoverflow.com/questions/22676/how-do-i-download-
 	file_size_dl = 0
 	block_sz = 8192
 	while True:
-	    buffer = u.read(block_sz)
-	    if not buffer:
-	        break
-	    file_size_dl += len(buffer)
-	    f.write(buffer)
-	    status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-	    status = status + chr(8)*(len(status)+1)
-	    print status,
+		buffer = u.read(block_sz)
+		if not buffer:
+			break
+		file_size_dl += len(buffer)
+		f.write(buffer)
+		status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
+		status = status + chr(8)*(len(status)+1)
+		print status,
 	f.close()
 
 def cleanOutput(text2):	#cleans up the output from df -h
@@ -169,18 +171,17 @@ def unmount(location):	#unmounts the drive so that it can be rewrittern
 
 class transferInBackground (threading.Thread): 	#Runs the dd command in a thread so that I can give a waiting... indicator
 
-   def run ( self ):
-	global SDsnip
-	global path
-	if OS[0] != 'Darwin':
-		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
-	else
-		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
-	print 'Running ' + copyString + '...'
+	def run ( self ):
+		global SDsnip
+		global path
+		if OS[0] != 'Darwin':
+			copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
+		else:
+			copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
+		print 'Running ' + copyString + '...'
 
-	print getoutput(copyString)
-	print 'done!'
-     
+		print getoutput(copyString)
+		print 'done!'
 
 def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	global path
@@ -272,10 +273,10 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		SDsnip = "/dev/mmcblk" + SD[11]
 	else:
 		if OS[0] != 'Darwin': 
-        	SDsnip =  SD.replace(' ', '')[:-1]
+			SDsnip =  SD.replace(' ', '')[:-1]
  		else:
  			# remove weird partition notation in OS X partition names
-        	SDsnip =  SD.replace(' ', '')[:-2]
+			SDsnip =  SD.replace(' ', '')[:-2]
 
 	print path
 	print '\n\n###################################################################'
@@ -298,16 +299,16 @@ GNU General Public License for more details.
 	print '###################################################################\n'
 	confirm = raw_input(boldStart + 'Please verify this information before typing \'accept\' to accept the terms and to start the process, if this information isn\'t correct, please press ctrl + c (^C), or type \'exit\' to quit: ' + end)
 	if confirm == 'accept':
-   		thread1 = transferInBackground()
-   		thread1.start()
+		thread1 = transferInBackground()
+		thread1.start()
 		sys.stdout.write("Waiting")
-   		sys.stdout.flush()
+		sys.stdout.flush()
 		while thread1.isAlive():
 			time.sleep(3)
 			sys.stdout.write(".")
-   			sys.stdout.flush()
-   		print 'Transfer Complete! Please remove the SD card'
-   		print """###########################################
+			sys.stdout.flush()
+		print 'Transfer Complete! Please remove the SD card'
+		print """###########################################
 Relevent information:
 > Debian - Login is pi/raspberry
 > Arch - Login is root/root
@@ -315,10 +316,10 @@ Relevent information:
 > QtonPi - Login is root/rootme
 ###########################################
 Thank You for using RasPiWrite, you are now free to eject your drive 
-   		"""
+		"""
 	else:
 		print 'ENDING WITHOUT COPYING ANY DATA ACROSS, SD CARD HAS BEEN UNMOUNTED'
-		exit()
+	exit()
 
 def getImage(SD): #gives the user a bunch of options to download an image, or select their own, it then passes the user on to the transfer function
 	global boldStart
@@ -387,8 +388,7 @@ QtonPi is an Embedded Linux platform plus SDK optimized for developing and runni
 			if matchBzip is not None:
 				print 'found Bz2'
 				transfer(userLocate, 'bz2', 'usr',SD,'none')
-    		
-				
+
 		else:
 			print 'sorry, the file you have specified doesn\'t exist, please try again'
 			print 'Press ctrl + c (^C) to quit'
