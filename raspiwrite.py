@@ -186,7 +186,7 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	global path
 	if archiveType == 'zip': 
 		#path =  file.replace(".zip", "") + '/' + file.replace(".zip", ".img") <- my old code
-		path = file.replace(".zip", "") + '/' + os.path.basename(file).replace(".zip", ".img") #Thanks to Lewis Boon
+		path = file.replace(".zip", ".img") #Thanks to Lewis Boon
 		extractCMD = 'unzip ' + file
 
 	if archiveType == 'img': 
