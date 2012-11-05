@@ -174,7 +174,7 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
 	global path
 	if OS[0] != 'Darwin':
 		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
-	else
+	else:
 		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
 	print 'Running ' + copyString + '...'
 
@@ -186,7 +186,7 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	global path
 	if archiveType == 'zip': 
 		#path =  file.replace(".zip", "") + '/' + file.replace(".zip", ".img") <- my old code
-		path = file.replace(".zip", "") + '/' + os.path.basename(file).replace(".zip", ".img") #Thanks to Lewis Boon
+		path = file.replace(".zip", ".img") #Thanks to Lewis Boon
 		extractCMD = 'unzip ' + file
 
 	if archiveType == 'img': 
@@ -270,12 +270,12 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 	global SDsnip
 	if (SD.find("/dev/mmcblk") + 1):
 		SDsnip = "/dev/mmcblk" + SD[11]
-	else:
+	else: 
 		if OS[0] != 'Darwin': 
-        	SDsnip =  SD.replace(' ', '')[:-1]
+			SDsnip =  SD.replace(' ', '')[:-1]
  		else:
  			# remove weird partition notation in OS X partition names
-        	SDsnip =  SD.replace(' ', '')[:-2]
+			SDsnip =  SD.replace(' ', '')[:-2]
 
 	print path
 	print '\n\n###################################################################'
