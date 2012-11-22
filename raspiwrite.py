@@ -305,9 +305,9 @@ GNU General Public License for more details.
       while thread1.isAlive():
         time.sleep(3)
         sys.stdout.write(".")
-        sys.stdout.flush()
-        print 'Transfer Complete! Please remove the SD card'
-        print """###########################################
+      sys.stdout.flush()
+      print 'Transfer Complete! Please remove the SD card'
+      print """###########################################
 Relevent information:
 > Debian - Login is pi/raspberry
 > Arch - Login is root/root
