@@ -308,7 +308,7 @@ GNU General Public License for more details.
             sys.stdout.flush()
         print 'Transfer Complete! Please remove the SD card'
         print """###########################################
-Relevent information:
+Relevant information:
 > Debian - Login is pi/raspberry
 > Arch - Login is root/root
 > Fedora - Login is root/fedoraarm
