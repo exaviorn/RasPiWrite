@@ -170,16 +170,16 @@ def unmount(location):	#unmounts the drive so that it can be rewrittern
 class transferInBackground (threading.Thread): 	#Runs the dd command in a thread so that I can give a waiting... indicator
 
    def run ( self ):
-	global SDsnip
-	global path
-	if OS[0] != 'Darwin':
-		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
-	else
-		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
-	print 'Running ' + copyString + '...'
+       global SDsnip
+       global path
+       if OS[0] != 'Darwin':
+	       copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
+       else:
+	       copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
+       print 'Running ' + copyString + '...'
 
-	print getoutput(copyString)
-	print 'done!'
+       print getoutput(copyString)
+       print 'done!'
      
 
 def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
@@ -272,10 +272,10 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		SDsnip = "/dev/mmcblk" + SD[11]
 	else:
 		if OS[0] != 'Darwin': 
-        	SDsnip =  SD.replace(' ', '')[:-1]
+        	    SDsnip =  SD.replace(' ', '')[:-1]
  		else:
  			# remove weird partition notation in OS X partition names
-        	SDsnip =  SD.replace(' ', '')[:-2]
+        	    SDsnip =  SD.replace(' ', '')[:-2]
 
 	print path
 	print '\n\n###################################################################'
