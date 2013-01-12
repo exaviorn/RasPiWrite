@@ -174,7 +174,7 @@ class transferInBackground (threading.Thread): 	#Runs the dd command in a thread
 	global path
 	if OS[0] != 'Darwin':
 		copyString = 'dd bs=1M if=%s of=%s' % (path,SDsnip)
-	else
+	else:
 		copyString = 'dd bs=1m if=%s of=%s' % (path,SDsnip)
 	print 'Running ' + copyString + '...'
 
@@ -272,10 +272,10 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		SDsnip = "/dev/mmcblk" + SD[11]
 	else:
 		if OS[0] != 'Darwin': 
-        	SDsnip =  SD.replace(' ', '')[:-1]
- 		else:
- 			# remove weird partition notation in OS X partition names
-        	SDsnip =  SD.replace(' ', '')[:-2]
+			SDsnip =  SD.replace(' ', '')[:-1]
+		else:
+			# remove weird partition notation in OS X partition names
+			SDsnip =  SD.replace(' ', '')[:-2]
 
 	print path
 	print '\n\n###################################################################'
@@ -437,7 +437,13 @@ if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around
 if not os.geteuid()==0:
 	print WARNING + 'Please run the script using sudo e.g. sudo python raspiwrite.py, or sudo ./raspiwrite.py (need to chmod +x first)' + end
 	exit()
-checkforUpdate()
+try:
+	checkforUpdate()
+except:
+	answer = raw_input("There was an issue checking for updates, Continue anyway? Y/n: ")
+	if not "Y" in answer:
+		print "Terminating..."
+		exit()
 print 'The following script is designed to copy a Raspberry Pi compatible disk image to an SD Card'
 print boldStart + 'INCORRECTLY FOLLOWING THE WIZARD COULD RESULT IN THE CORRUPTION OF YOUR HARD DISK, PARTITIONS OR A BACKUP USB DRIVE (INCLUDING MOUNTED TIME MACHINE BACKUP DRIVES)' +end
 print 'It is advisable to remove any other USB HDDs or memory sticks, the wizard might select that one, %s if you have multiple hard drives installed, please take a LOT of care selecting the right drive %s'% (boldStart, end) 
