@@ -75,8 +75,7 @@ def checkforUpdate():
 			print WARNING + '#####################################################################################################################'
 			print 'Your current version (%s) of RasPiWrite is not the latest, please go to the link below to update to version %s,' % (version, versionToDate)
 			print 'The Changes include: %s' % summary
-			print '''
-Please download the latest version of RasPiWrite from %s''' % dlURL
+			print ''' Please download the latest version of RasPiWrite from %s''' % dlURL
 			print '''#####################################################################################################################
 			''' + end
 		else:
@@ -437,7 +436,7 @@ if OS[0] != 'Darwin': #if Mac OS, will change to posix once I have worked around
 if not os.geteuid()==0:
 	print WARNING + 'Please run the script using sudo e.g. sudo python raspiwrite.py, or sudo ./raspiwrite.py (need to chmod +x first)' + end
 	exit()
-checkforUpdate()
+#checkforUpdate()
 print 'The following script is designed to copy a Raspberry Pi compatible disk image to an SD Card'
 print boldStart + 'INCORRECTLY FOLLOWING THE WIZARD COULD RESULT IN THE CORRUPTION OF YOUR HARD DISK, PARTITIONS OR A BACKUP USB DRIVE (INCLUDING MOUNTED TIME MACHINE BACKUP DRIVES)' +end
 print 'It is advisable to remove any other USB HDDs or memory sticks, the wizard might select that one, %s if you have multiple hard drives installed, please take a LOT of care selecting the right drive %s'% (boldStart, end) 
