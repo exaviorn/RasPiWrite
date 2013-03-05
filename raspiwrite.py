@@ -272,7 +272,7 @@ def transfer(file,archiveType,obtain,SD,URL):	#unzips the disk image
 		SDsnip = "/dev/mmcblk" + SD[11]
 	else:
 		if OS[0] != 'Darwin': 
-        	SDsnip =  SD.replace(' ', '')[:-1]
+        		SDsnip =  SD.replace(' ', '')[:-1]
  		else:
  			# remove weird partition notation in OS X partition names
         	SDsnip =  SD.replace(' ', '')[:-2]
