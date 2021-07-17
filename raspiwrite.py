@@ -155,7 +155,7 @@ def matchSD(input):	#grabs just the drive's name from the df -h command (macOSX 
 		match = '0'
 	return match
 
-def unmount(location):	#unmounts the drive so that it can be rewrittern
+def unmount(location):	#unmounts the drive so that it can be rewritten
 	global OS
 	print 'Unmounting the drive in preparation for writing...'
 	if OS[0] != 'Darwin':
@@ -406,7 +406,7 @@ def driveTest(SD):
 			driveTest(manualID)
 
 #logic:
-#most of this stuff is pretty self explanitory, some of it could be put into a function, but I don't like 
+#most of this stuff is pretty self explanatory, some of it could be put into a function, but I don't like 
 #having loads of micro functions (the ones I do have are going to be expanded to cover all unix based OS's)
 print getoutput('clear')
 print boldStart + """
